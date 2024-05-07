@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [UsersModule],
+  imports: [ MongooseModule.forRoot('mongodb+srv://MrAxel-01:3GqpiUBaO5NAkh6g@mraxel-01.fb1qxgu.mongodb.net/learning?retryWrites=true&w=majority') , UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })

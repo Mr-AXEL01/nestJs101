@@ -1,55 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from 'schemas/user.schema';
 
 @Injectable()
 export class UsersService {
+    constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-    private users = [
-        { 
-            id: 1, 
-            name: "John Doe", 
-            email: "john@example.com", 
-            role: "ADMIN" 
-        },
+    async findAll(): Promise<User[]> {
+        return this.userModel.find().exec();
+      }
 
-        { 
-            id: 2, 
-            name: "Jane Smith", 
-            email: "jane@example.com", 
-            role: "MANAGER" 
-        },
-
-        { 
-            id: 3, 
-            name: "Alice Johnson", 
-            email: "alice@example.com", 
-            role: "DEVELOPER" 
-        },
-
-        { 
-            id: 4, 
-            name: "Bob Brown", 
-            email: "bob@example.com", 
-            role: "DEVELOPER" 
-        },
-
-        { 
-            id: 5, 
-            name: "Emily Davis", 
-            email: "emily@example.com", 
-            role: "DEVELOPER" 
-        }
-    ];
-
-
-    findAll(role?: 'DEVELOPER' | 'MANAGER' | 'ADMIN') 
-    {
-        if(role) {
-            return this.users.filter(user => user.role === role)
-        }
-        return this.users
+    async create(createUserDto: CreateUserDto): Promise<User> {
+        const createdUser = new this.userModel(createUserDto);
+        return createdUser.save();
     }
-
-    
-
-
 }
