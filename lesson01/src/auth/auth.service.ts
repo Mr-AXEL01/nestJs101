@@ -14,16 +14,14 @@ export class AuthService {
     ) {}
 
     async signUp(CreateUserDto: CreateUserDto): Promise<{ access_token: string }> {
-        // Check if the user with the provided email already exists
+        
         const existingUser = await this.usersService.findOneByEmail(CreateUserDto.email);
         if (existingUser) {
             throw new UnauthorizedException('This email is already used');
         }
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(CreateUserDto.password, 10);
 
-        // Create the new user with the hashed password
         const newUser = await this.usersService.create({
             ...CreateUserDto,
             password: hashedPassword,
@@ -38,12 +36,19 @@ export class AuthService {
 
     async signIn(
         email: string, 
-        pass: string
+        password: string
         ): Promise<{ access_token: string }> {
         const user: User | null = await this.usersService.findOneByEmail(email);
-        if (!user || user.password !== pass) {
+        if (!user) {
             throw new NotFoundException();
         }
+
+        // Compare the entered password with the hashed password stored in the database
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            throw new UnauthorizedException('Invalid credentials');
+        }
+
         const payload = { sub: user._id, email: user.email };
         return {
             access_token: await this.jwtService.signAsync(payload),
