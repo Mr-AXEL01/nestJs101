@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, ValidationPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/create-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -16,7 +17,7 @@ export class ProductsController {
         return this.productsService.findOne(id);
     }
 
-    @Post() // POST /users
+    @Post() // POST /products
     create(@Body(ValidationPipe) CreateProductDto:CreateProductDto) { 
         return this.productsService.create(CreateProductDto);
     }
