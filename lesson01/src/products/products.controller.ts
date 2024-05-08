@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -20,6 +21,11 @@ export class ProductsController {
     @Post() // POST /products
     create(@Body(ValidationPipe) CreateProductDto:CreateProductDto) { 
         return this.productsService.create(CreateProductDto);
+    }
+
+    @Patch(':id') // PATCH /products/:id
+    update(@Param('id') id: string, @Body(ValidationPipe) UpdateProductDto: UpdateProductDto) {
+        return this.productsService.update(id, UpdateProductDto);
     }
     
 }
