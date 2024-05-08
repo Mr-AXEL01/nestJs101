@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'schemas/user.schema';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -19,8 +20,14 @@ export class AuthService {
             throw new UnauthorizedException('This email is already used');
         }
 
-        // Create the new user
-        const newUser = await this.usersService.create(CreateUserDto);
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(CreateUserDto.password, 10);
+
+        // Create the new user with the hashed password
+        const newUser = await this.usersService.create({
+            ...CreateUserDto,
+            password: hashedPassword,
+        });
 
         // Generate JWT token for the new user
         const payload = { sub: newUser._id, email: newUser.email };
