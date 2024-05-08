@@ -46,4 +46,9 @@ export class UsersService {
         return deletedUser;
     }
 
+    async findOneByEmail(email: string): Promise<User | null> {
+        const user = await this.userModel.findOne({ email }).exec();
+        return user;
+    }
+
 }

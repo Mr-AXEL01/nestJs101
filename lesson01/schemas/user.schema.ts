@@ -1,6 +1,13 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
 
+export interface User {
+    _id: String;
+    name: String;
+    email: String;
+    password: String;
+    role : String;
+}
 
 export type UserDocument = HydratedDocument<User>;
 
