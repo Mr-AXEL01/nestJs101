@@ -8,6 +8,8 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
 
+    private static blacklistedTokens: Set<string> = new Set();
+
     constructor(
         private usersService: UsersService,
         private jwtService: JwtService
@@ -43,7 +45,6 @@ export class AuthService {
             throw new NotFoundException();
         }
 
-        // Compare the entered password with the hashed password stored in the database
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             throw new UnauthorizedException('Invalid credentials');
@@ -53,6 +54,14 @@ export class AuthService {
         return {
             access_token: await this.jwtService.signAsync(payload),
         };
+    }
+
+    async logout(token: string): Promise<void> {
+        AuthService.blacklistedTokens.add(token);
+    }
+
+    async isTokenBlacklisted(token: string): Promise<boolean> {
+        return AuthService.blacklistedTokens.has(token);
     }
 
 }
